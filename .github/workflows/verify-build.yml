@@ -1,0 +1,35 @@
+name: Verify Jekyll build
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1.328.0
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+          cache-version: 0
+      - name: Build with Jekyll
+        run: bundle exec jekyll build --baseurl "/LJT-Homepage"
+        env:
+          JEKYLL_ENV: production
+      - name: Verify generated pages
+        run: |
+          test -f _site/index.html
+          test -f _site/publications/index.html
+          grep -q "Junteng Liu" _site/index.html
+          grep -q "Academic Background" _site/index.html
+          grep -q "Research Experience" _site/index.html
+          grep -q "SynLogic" _site/index.html
+          grep -q "SynLogic" _site/publications/index.html
+          grep -q "junteng88716710" _site/index.html
+          echo "All content checks passed."
